@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI超精密顔診断</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #f0f2f5; padding: 20px; }
+        .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 15px; shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        video { width: 100%; border-radius: 10px; transform: scaleX(-1); } /* 鏡合わせに表示 */
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        #loading { display: none; margin: 20px 0; }
+        #result { display: none; margin-top: 20px; }
+        .score { font-size: 48px; color: #ff4d4d; font-weight: bold; }
+        .average { color: #666; font-size: 14px; }
+        .comment { font-size: 20px; color: #333; margin: 10px 0; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>AI超精密顔診断</h2>
+    <p>最新のAIがあなたの顔を数値化します</p>
+    
+    <video id="webcam" autoplay playsinline></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+    
+    <button id="snap">診断を開始する</button>
+
+    <div id="loading">
+        <p>AI解析中...</p>
+        <progress value="0" max="100" id="progressBar" style="width:100%"></progress>
+    </div>
+
+    <div id="result">
+        <hr>
+        <div class="comment">【診断結果】<br>…えっ、何これ。めっちゃ不細工。</div>
+        <div class="score"><span id="scoreNum"></span>点</div>
+        <div class="average">（同世代の平均：40点）</div>
+        <button onclick="location.reload()">もう一度診断する</button>
+    </div>
+</div>
+
+<script>
+    const video = document.getElementById('webcam');
+    const snap = document.getElementById('snap');
+    const loading = document.getElementById('loading');
+    const result = document.getElementById('result');
+    const scoreNum = document.getElementById('scoreNum');
+    const progressBar = document.getElementById('progressBar');
+
+    // カメラの起動
+    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+    .then((stream) => {
+        video.srcObject = stream;
+    })
+    .catch((err) => {
+        alert("カメラを許可してください。");
+    });
+
+    // 診断ボタンクリック時
+    snap.addEventListener('click', () => {
+        snap.style.display = 'none';
+        loading.style.display = 'block';
+
+        // プログレスバーのアニメーション演出
+        let val = 0;
+        const interval = setInterval(() => {
+            val += 5;
+            progressBar.value = val;
+            if (val >= 100) {
+                clearInterval(interval);
+                showResult();
+            }
+        }, 100);
+    });
+
+    function showResult() {
+        loading.style.display = 'none';
+        result.style.display = 'block';
+        
+        // 0〜20点の間でランダムにスコアを生成
+        const finalScore = Math.floor(Math.random() * 21);
+        scoreNum.innerText = finalScore;
+    }
+</script>
+
+</body>
+</html>
